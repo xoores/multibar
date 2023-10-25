@@ -1,5 +1,3 @@
-<!-- Please read our contributing guide before opening a PR: https://github.com/polybar/polybar/blob/master/CONTRIBUTING.md -->
-
 ## What type of PR is this? (check all applicable)
 
 * [ ] Refactor
@@ -18,9 +16,3 @@
 
 ## Related Issues & Documents
 <!-- For example: Fixes #1234, Closes #6789 -->
-
-## Documentation (check all applicable)
-
-* [ ] This PR requires changes to the Wiki documentation (describe the changes)
-* [ ] This PR requires changes to the documentation inside the git repo (please add them to the PR).
-* [ ] Does not require documentation changes
