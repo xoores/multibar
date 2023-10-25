@@ -55,12 +55,12 @@ If you are using **Gentoo**, you can use [my overlay](https://github.com/xoores/
 Otherwise, you will have to [build from source](https://github.com/polybar/polybar/wiki/Compiling).
 
 ### First Steps
-[See the Polybar wiki for details on how to run and configure polybar](https://github.com/polybar/polybar/wiki).
+[See the Polybar wiki for details on how to run and configure multibar](https://github.com/polybar/polybar/wiki).
 
 ## License
 
-Polybar is licensed under the MIT license. [See LICENSE for more information](https://github.com/xoores/multibar/blob/master/LICENSE).
+Both Multibar and Polybar is licensed under the MIT license. [See LICENSE for more information](https://github.com/xoores/multibar/blob/master/LICENSE).
 
 ## Signatures
 
-Release archives and tags are signed by a maintainer using GPG. Everything is signed by my GPG key.
+All commits are signed by my GPG key.

@@ -199,7 +199,10 @@ namespace ipc {
   void ipc::receive_data(const string& buf) {
     m_pipe_buffer += buf;
 
-    m_log.warn("Using the named pipe at '%s' for ipc is deprecated, always use 'polybar-msg'", m_pipe_path);
+        m_log.warn("Using the named pipe at '%s' for ipc is deprecated, always use 'polybar-msg'", m_pipe_path);
+
+        // Added so I can see what I need to fix...
+        m_log.warn("Received: ", m_pipe_buffer);
   }
 
   /**

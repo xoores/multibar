@@ -50,6 +50,7 @@ namespace modules {
     void action_inc();
     void action_dec();
 
+    int get_step();
     void change_value(int value_mod);
     void set_value(int new_value);
 
@@ -65,6 +66,7 @@ namespace modules {
     float m_max_brightness{};
     bool m_scroll{false};
     bool m_scroll_inverted{false};
+    bool m_scroll_log{false};
     int m_scroll_interval{5};
     bool m_use_actual_brightness{true};
 

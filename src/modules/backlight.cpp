@@ -59,6 +59,12 @@ namespace modules {
 
     m_scroll_interval = m_conf.get(name(), "scroll-interval", m_scroll_interval);
 
+    // Use semilogarithmic setting - human eye is much more sensitive to intensity changes in the low side of the scale
+    // (meaning that for example change 1%->3% is perceived as the same "step" as 90%->100%). That means we should adjust
+    // our step in such a way that <=15% will result in 3% step and <5 will result in 1% step. >15% defaults to the
+    // m_scroll_interval.
+    m_scroll_log = m_conf.get(name(), "scroll-log", m_scroll_log);
+
     // Add formats and elements
     m_formatter->add(DEFAULT_FORMAT, TAG_LABEL, {TAG_LABEL, TAG_BAR, TAG_RAMP});
 
@@ -169,16 +175,30 @@ namespace modules {
     return true;
   }
 
+  int backlight_module::get_step() {
+    if( !m_scroll_log ) {
+      return m_scroll_interval;
+    }
+
+    if( m_percentage < 5) {
+      return 1;
+    } else if( m_percentage <= 15 ) {
+      return 3;
+    }
+
+    return m_scroll_interval;
+  }
+
   void backlight_module::action_toggle() {
     set_value((m_percentage > 1 ? 1 : m_max_brightness));
   }
 
   void backlight_module::action_inc() {
-    change_value(m_scroll_interval);
+    change_value(get_step());
   }
 
   void backlight_module::action_dec() {
-    change_value(-m_scroll_interval);
+    change_value(-get_step());
   }
 
   // Set absolute value

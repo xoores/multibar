@@ -8,7 +8,7 @@ given order: `Breaking`, `Build`, `Deprecated`, `Removed`, `Added`, `Changed`,
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.0.0]
+## [Unreleased 1.0.0]
 ### Added
 - `internal/network`: `metric-units` setting ([`Polybar #3001`](https://github.com/polybar/polybar/pull/3001))
 - `internal/backlight`:
