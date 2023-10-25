@@ -27,6 +27,8 @@ namespace modules {
       : inotify_module<backlight_module>(bar, move(name_), config) {
     m_router->register_action(EVENT_DEC, [this]() { action_dec(); });
     m_router->register_action(EVENT_INC, [this]() { action_inc(); });
+    m_router->register_action(EVENT_TOGGLE, [this]() { action_toggle(); });
+
     auto card = m_conf.get(name(), "card", ""s);
     if (card.empty()) {
       vector<string> backlight_card_names = file_util::list_files(string_util::replace(PATH_BACKLIGHT, "%card%", ""));
@@ -51,6 +53,9 @@ namespace modules {
     }
     // Get flag to check if we should add scroll handlers for changing value
     m_scroll = m_conf.get(name(), "enable-scroll", m_scroll);
+
+    // Inverted scrolling
+    m_scroll_inverted = m_conf.get(name(), "reverse-scroll", m_scroll_inverted);
 
     m_scroll_interval = m_conf.get(name(), "scroll-interval", m_scroll_interval);
 
@@ -136,6 +141,8 @@ namespace modules {
     // with the cmd handlers
     string output{module::get_output()};
 
+    m_builder->action(mousebtn::LEFT, *this, EVENT_TOGGLE, "");
+
     if (m_scroll) {
       m_builder->action(mousebtn::SCROLL_UP, *this, EVENT_INC, "");
       m_builder->action(mousebtn::SCROLL_DOWN, *this, EVENT_DEC, "");
@@ -162,6 +169,10 @@ namespace modules {
     return true;
   }
 
+  void backlight_module::action_toggle() {
+    set_value((m_percentage > 1 ? 1 : m_max_brightness));
+  }
+
   void backlight_module::action_inc() {
     change_value(m_scroll_interval);
   }
@@ -170,19 +181,29 @@ namespace modules {
     change_value(-m_scroll_interval);
   }
 
-  void backlight_module::change_value(int value_mod) {
-    m_log.info("%s: Changing value by %d%", name(), value_mod);
-
+  // Set absolute value
+  void backlight_module::set_value(int new_value) {
     try {
-      int rounded = math_util::cap<double>(m_percentage + value_mod, 0.0, 100.0) + 0.5;
-      int value = math_util::percentage_to_value<int>(rounded, m_max_brightness);
-      file_util::write_contents(m_path_backlight + "/brightness", to_string(value));
+      m_log.info("%s: Setting brighness value to %d", name(), new_value);
+      file_util::write_contents(m_path_backlight + "/brightness", to_string(new_value));
     } catch (const exception& err) {
       m_log.err(
           "%s: Unable to change backlight value. Your system may require additional "
           "configuration. Please read the module documentation.\n(reason: %s)",
           name(), err.what());
     }
+  }
+
+  // Set relative value
+  void backlight_module::change_value(int value_mod) {
+    if( m_scroll_inverted ) value_mod *= -1;
+
+    m_log.info("%s: Changing value by %d%", name(), value_mod);
+
+    int rounded = math_util::cap<double>(m_percentage + value_mod, 0, 100.0) + 0.5;
+    int value = math_util::percentage_to_value<int>(rounded, m_max_brightness);
+
+    set_value(value);
   }
 } // namespace modules
 

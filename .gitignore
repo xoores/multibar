@@ -10,6 +10,7 @@
 
 # clangd
 /.cache
+/cmake-build-debug
 
 polybar-*.tar
 *.cache

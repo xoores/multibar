@@ -221,12 +221,12 @@ set_target_properties(poly PROPERTIES ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DI
 
 # Target: polybar {{{
 if(BUILD_POLYBAR)
-  add_executable(polybar main.cpp)
-  target_link_libraries(polybar poly)
-  target_compile_options(polybar PUBLIC ${cxx_flags})
-  set_target_properties(polybar PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+  add_executable(multibar main.cpp)
+  target_link_libraries(multibar poly)
+  target_compile_options(multibar PUBLIC ${cxx_flags})
+  set_target_properties(multibar PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
-  install(TARGETS polybar
+  install(TARGETS multibar
     DESTINATION ${CMAKE_INSTALL_BINDIR}
     COMPONENT runtime)
 endif()
@@ -234,12 +234,12 @@ endif()
 
 # Target: polybar-msg {{{
 if(BUILD_POLYBAR_MSG)
-  add_executable(polybar-msg polybar-msg.cpp)
-  target_link_libraries(polybar-msg poly)
-  target_include_directories(polybar-msg PRIVATE ${includes_dir})
-  target_compile_options(polybar-msg PUBLIC ${cxx_flags})
+  add_executable(multibar-msg multibar-msg.cpp)
+  target_link_libraries(multibar-msg poly)
+  target_include_directories(multibar-msg PRIVATE ${includes_dir})
+  target_compile_options(multibar-msg PUBLIC ${cxx_flags})
 
-  install(TARGETS polybar-msg
+  install(TARGETS multibar-msg
     DESTINATION ${CMAKE_INSTALL_BINDIR}
     COMPONENT runtime)
 endif()

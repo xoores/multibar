@@ -2,7 +2,7 @@
 # Build configuration
 #
 cmake_minimum_required(VERSION 3.5.0 FATAL_ERROR)
-project(polybar CXX)
+project(multibar CXX)
 
 # Extract version information from version.txt. The first line that looks like
 # a version string is used, so the file supports comments

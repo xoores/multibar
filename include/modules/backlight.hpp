@@ -43,12 +43,15 @@ namespace modules {
 
     static constexpr const char* EVENT_INC = "inc";
     static constexpr const char* EVENT_DEC = "dec";
+    static constexpr const char* EVENT_TOGGLE = "toggle";
 
    protected:
+    void action_toggle();
     void action_inc();
     void action_dec();
 
     void change_value(int value_mod);
+    void set_value(int new_value);
 
    private:
     static constexpr auto TAG_LABEL = "<label>";
@@ -61,6 +64,7 @@ namespace modules {
     string m_path_backlight;
     float m_max_brightness{};
     bool m_scroll{false};
+    bool m_scroll_inverted{false};
     int m_scroll_interval{5};
     bool m_use_actual_brightness{true};
 
