@@ -1,11 +1,11 @@
-polybar-msg(1)
+multibar-msg(1)
 ==============
 
 SYNOPSIS
 --------
-| **polybar-msg** [*OPTIONS*] **action** *action-string*
-| **polybar-msg** [*OPTIONS*] **action** *module* *action* [*data*]
-| **polybar-msg** [*OPTIONS*] **cmd** *command*
+| **multibar-msg** [*OPTIONS*] **action** *action-string*
+| **multibar-msg** [*OPTIONS*] **action** *module* *action* [*data*]
+| **multibar-msg** [*OPTIONS*] **cmd** *command*
 
 DESCRIPTION
 -----------
@@ -18,14 +18,14 @@ The available actions depend on the target module.
 For actions, the payload is either a single action string or the module name,
 the action name, and the optional data string specified separately.
 
-In order for **polybar-msg** being able to send a message to a running
-**polybar** process, the bar must have IPC enabled and both **polybar-msg** and
+In order for **multibar-msg** being able to send a message to a running
+**polybar** process, the bar must have IPC enabled and both **multibar-msg** and
 **polybar** must run under the same user.
 
 OPTIONS
 -------
 
-.. program:: polybar-msg
+.. program:: multibar-msg
 
 .. option:: -h, --help
 
@@ -33,43 +33,39 @@ OPTIONS
 
 .. option:: -p PID
 
-   Send message only to **polybar** process running under the given process ID.
-   If not specified, the message is sent to all running **polybar** processes.
+   Send message only to **multibar** process running under the given process ID.
+   If not specified, the message is sent to all running **multibar** processes.
 
 EXAMPLES
 --------
 
-**polybar-msg** **cmd** *quit*
-  Terminate all running **polybar** instances.
+**multibar-msg** **cmd** *quit*
+  Terminate all running **multibar** instances.
 
-**polybar-msg** **action** *mymodule* *module_hide*
+**multibar-msg** **action** *mymodule* *module_hide*
 
-**polybar-msg** **action** "*#mymodule.module_hide*"
+**multibar-msg** **action** "*#mymodule.module_hide*"
   Hide the module named *mymodule*.
   The first variant specifies the module and action names separately, the second uses an action string.
 
 AUTHORS
 -------
+| Multibar is maintained by Xoores.
 | Polybar was created by Michael Carlberg and is currently maintained by Patrick Ziegler.
-| Contributors can be listed on GitHub.
-
-REPORTING BUGS
---------------
-Report issues on GitHub <https://github.com/polybar/polybar>
 
 SEE ALSO
 --------
 .. only:: man
 
-  :manpage:`polybar`\(1),
-  :manpage:`polybar`\(5)
+  :manpage:`multibar`\(1),
+  :manpage:`multibar`\(5)
 
   | IPC documentation: <https://polybar.rtfd.org/en/stable/user/ipc.html>
 
 
 .. only:: not man
 
-  :doc:`polybar.1`,
-  :doc:`polybar.5`
+  :doc:`multibar.1`,
+  :doc:`multibar.5`
 
   :doc:`/user/ipc`

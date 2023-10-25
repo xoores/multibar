@@ -1,19 +1,19 @@
-polybar(1)
+multibar(1)
 ==========
 
 SYNOPSIS
 --------
-**polybar** [*OPTIONS*]... [*BAR*]
+**multibar** [*OPTIONS*]... [*BAR*]
 
 DESCRIPTION
 -----------
-Polybar aims to help users build beautiful and highly customizable status bars for their desktop environment, without the need of having a black belt in shell scripting.
-If the *BAR* argument is not provided and the configuration file only contains one bar definition, polybar will display this bar.
+Multibar is a fork of Polybar poject. It aims to help users build beautiful and highly customizable status bars for their desktop environment, without the need of having a black belt in shell scripting.
+If the *BAR* argument is not provided and the configuration file only contains one bar definition, multibar will display this bar.
 
 OPTIONS
 -------
 
-.. program:: polybar
+.. program:: multibar
 
 .. option:: -h, --help
 
@@ -33,13 +33,13 @@ OPTIONS
 
    Specify the path to the configuration file. By default, the configuration file is loaded from:
 
-   * ``$XDG_CONFIG_HOME/polybar/config``
-   * ``$XDG_CONFIG_HOME/polybar/config.ini``
-   * ``$HOME/.config/polybar/config``
-   * ``$HOME/.config/polybar/config.ini``
-   * ``$XDG_CONFIG_DIRS/polybar/config.ini``
-   * ``/etc/xdg/polybar/config.ini`` (only if ``XDG_CONFIG_DIRS`` is not set)
-   * ``/etc/polybar/config.ini``
+   * ``$XDG_CONFIG_HOME/multibar/config``
+   * ``$XDG_CONFIG_HOME/multibar/config.ini``
+   * ``$HOME/.config/multibar/config``
+   * ``$HOME/.config/multibar/config.ini``
+   * ``$XDG_CONFIG_DIRS/multibar/config.ini``
+   * ``/etc/xdg/multibar/config.ini`` (only if ``XDG_CONFIG_DIRS`` is not set)
+   * ``/etc/multibar/config.ini``
 .. option:: -r, --reload
 
    Reload the application when the config file has been modified
@@ -50,12 +50,12 @@ OPTIONS
 
    | Print list of available monitors and exit.
    | If some monitors are cloned, this will exclude all but one of them.
-   | If polybar was compiled with RandR monitor support, only monitors are listed and not physical outputs.
+   | If multibar was compiled with RandR monitor support, only monitors are listed and not physical outputs.
 .. option:: -M, --list-all-monitors
 
    | Print list of all available monitors and exit.
    | This includes cloned monitors as well as both physical outputs and RandR monitors (if supported).
-   | Only the names listed here can be used as monitor names in polybar.
+   | Only the names listed here can be used as monitor names in multibar.
 .. option:: -w, --print-wmname
 
    Print the generated *WM_NAME* and exit
@@ -68,25 +68,25 @@ OPTIONS
 
 AUTHORS
 -------
+| Multibar is maintained by Xoores.
 | Polybar was created by Michael Carlberg and is currently maintained by Patrick Ziegler.
-| Contributors can be listed on GitHub.
 
 REPORTING BUGS
 --------------
-Report issues on GitHub <https://github.com/polybar/polybar>
+Report issues on GitHub <https://github.com/xoores/multibar>
 
 SEE ALSO
 --------
 .. only:: man
 
-  :manpage:`polybar-msg`\(1),
-  :manpage:`polybar`\(5)
+  :manpage:`multibar-msg`\(1),
+  :manpage:`multibar`\(5)
 
 
 .. only:: not man
 
-  :doc:`polybar-msg.1`,
-  :doc:`polybar.5`
+  :doc:`multibar-msg.1`,
+  :doc:`multibar.5`
 
-| Full documentation at: <https://github.com/polybar/polybar>
-| Project wiki: <https://github.com/polybar/polybar/wiki>
+| Full documentation at: <https://github.com/xoores/multibar>
+| Polybar wiki: <https://github.com/polybar/polybar/wiki>

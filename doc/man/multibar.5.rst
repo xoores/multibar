@@ -1,12 +1,12 @@
 .. highlight:: ini
 
-polybar(5)
+multibar(5)
 ==========
 
 Description
 -----------
 
-The polybar configuration file defines the behavior and look of polybar. It uses
+The multibar configuration file defines the behavior and look of multibar. It uses
 a variant of the `INI <https://en.wikipedia.org/wiki/INI_file>`_ file format.
 The exact syntax is described below but first a small snippet to get familiar
 with the syntax:
@@ -26,18 +26,18 @@ with the syntax:
   ; Use double quotes if you want to keep the surrounding space.
   text = " Some text "
 
-When started ``polybar`` will search for the config file in one of several
+When started ``multibar`` will search for the config file in one of several
 places in the following order:
 
 * If the ``-c`` or ``--config`` command line argument is specified, it will use
   the path given there.
-* ``$XDG_CONFIG_HOME/polybar/config``
-* ``$XDG_CONFIG_HOME/polybar/config.ini``
-* ``$HOME/.config/polybar/config``
-* ``$HOME/.config/polybar/config.ini``
-* ``$XDG_CONFIG_DIRS/polybar/config.ini``
-* ``/etc/xdg/polybar/config.ini`` (only if ``XDG_CONFIG_DIRS`` is not set)
-* ``/etc/polybar/config.ini``
+* ``$XDG_CONFIG_HOME/multibar/config``
+* ``$XDG_CONFIG_HOME/multibar/config.ini``
+* ``$HOME/.config/multibar/config``
+* ``$HOME/.config/multibar/config.ini``
+* ``$XDG_CONFIG_DIRS/multibar/config.ini``
+* ``/etc/xdg/multibar/config.ini`` (only if ``XDG_CONFIG_DIRS`` is not set)
+* ``/etc/multibar/config.ini``
 
 Syntax
 ------
@@ -152,7 +152,7 @@ Empty Lines & Comments
 ^^^^^^^^^^^^^^^^^^^^^^
 
 Empty lines and comment lines are ignored when reading the config file, they do
-not affect polybar's behavior. Comment lines start with either the ``;`` or the
+not affect multibar's behavior. Comment lines start with either the ``;`` or the
 ``#`` character.
 
 .. note::
@@ -166,19 +166,19 @@ not affect polybar's behavior. Comment lines start with either the ``;`` or the
 
 AUTHORS
 -------
+| Multibar is maintained by Xoores.
 | Polybar was created by Michael Carlberg and is currently maintained by Patrick Ziegler.
-| Contributors can be listed on GitHub.
 
 SEE ALSO
 --------
 
 .. only:: man
 
-  :manpage:`polybar`\(1),
-  :manpage:`polybar-msg`\(1)
+  :manpage:`multibar`\(1),
+  :manpage:`multibar-msg`\(1)
 
 
 .. only:: not man
 
-  :doc:`polybar.1`,
-  :doc:`polybar-msg.1`
+  :doc:`multibar.1`,
+  :doc:`multibar-msg.1`
