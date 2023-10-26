@@ -70,15 +70,13 @@ label = %{A9:#date.toggle:}%{A10:#date.toggle:}%time% %date%%{A9 A10}
 ```
 results in following change when hovering over date module:
 
-![hover off](doc/_static/date-hover_off.png)
-![hover on](doc/_static/date-hover_on.png)
+![hover off](doc/_static/date-hover.gif)
 
 #### Example with `internal-backlight`:
 ```ini
 [module/brightness]
 type = internal/backlight
 card = intel_backlight
-#card = nvidia_0
 
 enable-scroll = true
 scroll-log = true
@@ -91,7 +89,7 @@ label-hover = " %percentage%%"
 ```
 results in following change when hovering over date module:
 
-![hover off](doc/_static/brightness-hover_off.png) ![hover on](doc/_static/brightness-hover_on.png)
+![hover off](doc/_static/brightness-hover.gif)
 
 ### Enhanced `internal/backlight`
 This module got several new options:
