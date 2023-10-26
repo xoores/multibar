@@ -17,6 +17,21 @@ namespace modules {
       FULL,
     };
 
+    // Valid values are specified in Linux kernel: drivers/power/supply/power_supply_sysfs.c
+    //    static const char * const POWER_SUPPLY_STATUS_TEXT[] = {
+    //        [POWER_SUPPLY_STATUS_UNKNOWN]           = "Unknown",
+    //        [POWER_SUPPLY_STATUS_CHARGING]          = "Charging",
+    //        [POWER_SUPPLY_STATUS_DISCHARGING]       = "Discharging",
+    //        [POWER_SUPPLY_STATUS_NOT_CHARGING]      = "Not charging",
+    //        [POWER_SUPPLY_STATUS_FULL]              = "Full",
+    //    };
+    enum class charging_state {
+      IDLE = 0, // not charging
+      CHARGING, // charging
+      DISCHARGING, // discharging
+      FULL, // discharging
+    };
+
     enum class value {
       NONE = 0,
       ADAPTER,
@@ -41,7 +56,7 @@ namespace modules {
       const function<ReturnType()> m_fn;
     };
 
-    using state_reader = mutex_wrapper<value_reader<bool /* is_charging */>>;
+    using state_reader = mutex_wrapper<value_reader<charging_state /* charging/discharging/idle */>>;
     using capacity_reader = mutex_wrapper<value_reader<int /* percentage */>>;
     using rate_reader = mutex_wrapper<value_reader<unsigned long /* seconds */>>;
     using consumption_reader = mutex_wrapper<value_reader<string /* watts */>>;
@@ -77,6 +92,7 @@ namespace modules {
     static constexpr const char* TAG_ANIMATION_LOW{"<animation-low>"};
     static constexpr const char* TAG_BAR_CAPACITY{"<bar-capacity>"};
     static constexpr const char* TAG_RAMP_CAPACITY{"<ramp-capacity>"};
+    static constexpr const char* TAG_RAMP_CHARGING{"<ramp-charging>"};
     static constexpr const char* TAG_LABEL_CHARGING{"<label-charging>"};
     static constexpr const char* TAG_LABEL_DISCHARGING{"<label-discharging>"};
     static constexpr const char* TAG_LABEL_FULL{"<label-full>"};
@@ -98,6 +114,7 @@ namespace modules {
     animation_t m_animation_low;
     progressbar_t m_bar_capacity;
     ramp_t m_ramp_capacity;
+    ramp_t m_ramp_charging;
 
     string m_fstate;
     string m_fcapnow;

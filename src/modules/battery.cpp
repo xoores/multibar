@@ -36,10 +36,21 @@ namespace modules {
 
     // Make state reader
     if (file_util::exists((m_fstate = path_battery + "status"))) {
-      m_state_reader =
-          make_unique<state_reader>([=] { return file_util::contents(m_fstate).compare(0, 8, "Charging") == 0; });
+      m_state_reader = make_unique<state_reader>([=] {
+        string s = file_util::contents(m_fstate);
+        if( s.compare(0,8, "Charging") == 0 ) return battery_module::charging_state::CHARGING;
+        if( s.compare(0,4, "Full") == 0 ) return battery_module::charging_state::FULL;
+        if( s.compare(0,11, "Discharging") == 0 ) return battery_module::charging_state::DISCHARGING;
+        return battery_module::charging_state::IDLE;
+      });
+
     } else if (file_util::exists((m_fstate = path_adapter + "online"))) {
-      m_state_reader = make_unique<state_reader>([=] { return file_util::contents(m_fstate).compare(0, 1, "1") == 0; });
+      // This reader can only distinguish between plugged-in and unplugged state...
+      m_state_reader = make_unique<state_reader>([=] {
+        if( file_util::contents(m_fstate).compare(0, 1, "1") == 0 ) return battery_module::charging_state::CHARGING;
+        return battery_module::charging_state::DISCHARGING;
+      });
+
     } else {
       throw module_error("No suitable way to get current charge state");
     }
@@ -69,7 +80,7 @@ namespace modules {
       unsigned long volt{std::strtoul(file_util::contents(m_fvoltage).c_str(), nullptr, 10) / 1000UL};
       unsigned long now{std::strtoul(file_util::contents(m_fcapnow).c_str(), nullptr, 10)};
       unsigned long max{std::strtoul(file_util::contents(m_fcapfull).c_str(), nullptr, 10)};
-      unsigned long cap{read(*m_state_reader) ? max - now : now};
+      unsigned long cap{read(*m_state_reader) == battery_module::charging_state::DISCHARGING ? now : max - now};
 
       if (rate && volt && cap) {
         auto remaining = (cap / volt);
@@ -114,11 +125,11 @@ namespace modules {
 
     // Add formats and elements
     m_formatter->add(FORMAT_CHARGING, TAG_LABEL_CHARGING,
-        {TAG_BAR_CAPACITY, TAG_RAMP_CAPACITY, TAG_ANIMATION_CHARGING, TAG_LABEL_CHARGING});
+        {TAG_BAR_CAPACITY, TAG_RAMP_CAPACITY, TAG_ANIMATION_CHARGING, TAG_RAMP_CHARGING, TAG_LABEL_CHARGING});
     m_formatter->add(FORMAT_DISCHARGING, TAG_LABEL_DISCHARGING,
-        {TAG_BAR_CAPACITY, TAG_RAMP_CAPACITY, TAG_ANIMATION_DISCHARGING, TAG_LABEL_DISCHARGING});
-    m_formatter->add_optional(FORMAT_LOW, {TAG_BAR_CAPACITY, TAG_RAMP_CAPACITY, TAG_ANIMATION_LOW, TAG_LABEL_LOW});
-    m_formatter->add(FORMAT_FULL, TAG_LABEL_FULL, {TAG_BAR_CAPACITY, TAG_RAMP_CAPACITY, TAG_LABEL_FULL});
+        {TAG_BAR_CAPACITY, TAG_RAMP_CAPACITY, TAG_RAMP_CHARGING, TAG_ANIMATION_DISCHARGING, TAG_LABEL_DISCHARGING});
+    m_formatter->add_optional(FORMAT_LOW, {TAG_BAR_CAPACITY, TAG_RAMP_CAPACITY, TAG_RAMP_CHARGING, TAG_ANIMATION_LOW, TAG_LABEL_LOW});
+    m_formatter->add(FORMAT_FULL, TAG_LABEL_FULL, {TAG_BAR_CAPACITY, TAG_RAMP_CAPACITY, TAG_RAMP_CHARGING, TAG_LABEL_FULL});
 
     if (m_formatter->has(TAG_ANIMATION_CHARGING, FORMAT_CHARGING)) {
       m_animation_charging = load_animation(m_conf, name(), TAG_ANIMATION_CHARGING);
@@ -134,6 +145,9 @@ namespace modules {
     }
     if (m_formatter->has(TAG_RAMP_CAPACITY)) {
       m_ramp_capacity = load_ramp(m_conf, name(), TAG_RAMP_CAPACITY);
+    }
+    if (m_formatter->has(TAG_RAMP_CHARGING)) {
+      m_ramp_charging = load_ramp(m_conf, name(), TAG_RAMP_CHARGING);
     }
     if (m_formatter->has(TAG_LABEL_CHARGING, FORMAT_CHARGING)) {
       m_label_charging = load_optional_label(m_conf, name(), TAG_LABEL_CHARGING, "%percentage%%");
@@ -285,6 +299,8 @@ namespace modules {
       builder->node(m_bar_capacity->output(clamp_percentage(m_percentage, m_state)));
     } else if (tag == TAG_RAMP_CAPACITY) {
       builder->node(m_ramp_capacity->get_by_percentage_with_borders(m_percentage, m_lowat, m_fullat));
+    }  else if (tag == TAG_RAMP_CHARGING) {
+      builder->node(m_ramp_charging->get_by_percentage_with_borders(m_percentage, m_lowat, m_fullat));
     } else if (tag == TAG_LABEL_CHARGING) {
       builder->node(m_label_charging);
     } else if (tag == TAG_LABEL_DISCHARGING) {
@@ -302,15 +318,32 @@ namespace modules {
 
   /**
    * Get the current battery state
+   *
+   * This was originally a little bit wrong - my DELL laptop has a feature that let's me configure maximal charge % for
+   * "off-hours". I have set it to 90%, so on weekends and evenings my battery will stop charging at that value. The
+   * system then reports "Not Charging". Note that this not mean *discharging* - and since original m_state_reader only
+   * check whether the status says "charging" it reports this as discharging...
+   *
+   * So let's fix that!
    */
   battery_module::state battery_module::current_state() {
     auto charge = read(*m_capacity_reader);
+    // Are we over clamped fullat value? If so, return FULL
     if (charge >= m_fullat) {
       return battery_module::state::FULL;
-    } else if (!read(*m_state_reader)) {
-      return charge <= m_lowat ? battery_module::state::LOW : battery_module::state::DISCHARGING;
-    } else {
-      return battery_module::state::CHARGING;
+    }
+
+    // Now let's map our battery states accordingly - IDLE means basically FULL, not DISCHARGING!
+    switch (read(*m_state_reader)) {
+      case charging_state::IDLE:
+      case charging_state::FULL:
+        return battery_module::state::FULL;
+
+      case charging_state::CHARGING:
+        return battery_module::state::CHARGING;
+
+      default:
+        return charge <= m_lowat ? battery_module::state::LOW : battery_module::state::DISCHARGING;
     }
   }
 

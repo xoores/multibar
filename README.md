@@ -102,11 +102,22 @@ while still enabling reasonable fast scrolling for higher brightness.
 ### Enhanced `internal/network`
 Network module got an `metric-units` option as described in [Polybar PR #3001 by @Cationiz3r](https://github.com/polybar/polybar/pull/3001)
 
+### Enhanced `internal/battery`
+This module got extra `ramp-charging` option as I like to have a special icon when charging (has a bolt inside).
+
+Also, my laptop (DELL Precision 7760) has a feature that allows me to limit battery charge "off-hours" - so when my battery
+reaches 90%, it will stop charging. Old implementation of Polybar saw this "idle" state as "discharging" with 00:00 time and quite
+did not like that! I like to have orange color when discharging, so it was extra obvious that the original behavior was
+not quite right. I also did not want to use `full-at` since it would be just wrong - the battery will charge up to 100%, just not
+during the off-hours.
+
 ### TODO
 - [ ] Global hover actions in modules - at least the ones I use ;-)
 - [ ] Support for adding icons to workplace names in i3 based on what app is on workplace
 - [ ] Network aliases for `internal/network` modules, so I can have home SSID displayed as  etc
 - [ ] Mark default-gw interface in `internal/network` so I can tell what is being used as uplink
+- [ ] Sending DBUS notification on volume/brightness change
+- [ ] `internal/pulseaudio` should support both sources and sinks
 
 
 ## Getting started

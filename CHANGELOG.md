@@ -18,10 +18,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Added `format-hover` and `label-hover` to the base module template so any module can easily make use of this with `m_formatter->add_default_formats()`
 - Network unit type ([Polybar PR #3001 by @Cationiz3r](https://github.com/polybar/polybar/pull/3001))
   - `internal/network`: `metric-units` setting
-- reverse-scroll, logarithmic-scroll and click-toggle ([Polybar PR #2703 by me](https://github.com/polybar/polybar/pull/2703))
-  - `internal/backlight`:
-    - Added `reverse-scroll` option and LEFT_CLICK action
-    - Added `scroll-log` option that enables logarithmic adjustment of brightness
+- `internal/backlight`: reverse-scroll, logarithmic-scroll and click-toggle ([Polybar PR #2703 by me](https://github.com/polybar/polybar/pull/2703))
+  - Added `reverse-scroll` option and LEFT_CLICK action
+  - Added `scroll-log` option that enables logarithmic adjustment of brightness
+- `internal/battery`:
+  - Added `ramp-charging`
+  - Added handling of extra states (such as "Not charging")
 
 
 [1.0.0]: https://github.com/xoores/multibar/

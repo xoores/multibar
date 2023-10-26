@@ -288,23 +288,29 @@ namespace file_util {
   /*
    * Search for polybar config and returns the path if found
    */
+  void push_config_path(vector<string> &possible_paths, string path ) {
+    possible_paths.push_back(path);
+    possible_paths.push_back(path + ".ini");
+
+    string polybar_path = string_util::replace(path, "multibar", "polybar");
+
+    possible_paths.push_back(polybar_path);
+    possible_paths.push_back(polybar_path + ".ini");
+  }
+
   string get_config_path() {
-    const static string suffix = "/polybar/config";
+    const static string suffix = "/multibar/config";
 
     vector<string> possible_paths;
 
     if (env_util::has("XDG_CONFIG_HOME")) {
       auto path = env_util::get("XDG_CONFIG_HOME") + suffix;
-
-      possible_paths.push_back(path);
-      possible_paths.push_back(path + ".ini");
+      push_config_path(possible_paths, path);
     }
 
     if (env_util::has("HOME")) {
       auto path = env_util::get("HOME") + "/.config" + suffix;
-
-      possible_paths.push_back(path);
-      possible_paths.push_back(path + ".ini");
+      push_config_path(possible_paths, path);
     }
 
     vector<string> xdg_config_dirs;
@@ -319,10 +325,10 @@ namespace file_util {
     }
 
     for (const string& xdg_config_dir : xdg_config_dirs) {
-      possible_paths.push_back(xdg_config_dir + suffix + ".ini");
+      push_config_path(possible_paths, xdg_config_dir + suffix + ".ini");
     }
 
-    possible_paths.push_back("/etc" + suffix + ".ini");
+    push_config_path(possible_paths, "/etc" + suffix + ".ini");
 
     for (const string& p : possible_paths) {
       if (exists(p)) {
