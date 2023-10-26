@@ -22,6 +22,7 @@ using std::atomic;
 using std::map;
 
 #define DEFAULT_FORMAT "format"
+#define DEFAULT_FORMAT_HOVER "format-hover"
 
 #define CONST_MOD(name) static_cast<name const&>(*this)
 #define CAST_MOD(name) static_cast<name*>(this)
@@ -83,6 +84,12 @@ namespace modules {
    public:
     explicit module_formatter(const config& conf, string modname) : m_conf(conf), m_modname(modname) {}
 
+    // add_default_formats is an extension that should make life of modules easier - it will add DEFAULT_FORMAT as well
+    // as DEFAULT_FORMAT_HOVER (which will default to the value of DEFAULT_FORMAT for backwards compatibility). It should
+    // be enough for modules to replace line like this:  m_formatter->add(DEFAULT_FORMAT, blah blah...);
+    // with something like this:                         m_formatter->add_default_formats(TAG_LABEL, blah blah....);
+    // and it should be good to go.
+    void add_default_formats(string fallback, vector<string>&& tags, vector<string>&& whitelist = {});
     void add(string name, string fallback, vector<string>&& tags, vector<string>&& whitelist = {});
     void add_optional(string name, vector<string>&& tags, vector<string>&& whitelist = {});
     bool has(const string& tag, const string& format_name);
@@ -148,6 +155,8 @@ namespace modules {
     static constexpr auto EVENT_MODULE_TOGGLE = "module_toggle";
     static constexpr auto EVENT_MODULE_SHOW = "module_show";
     static constexpr auto EVENT_MODULE_HIDE = "module_hide";
+    static constexpr auto EVENT_MODULE_HOVER_ON = "module_hover_on";
+    static constexpr auto EVENT_MODULE_HOVER_OFF = "module_hover_off";
 
     string type() const override;
 
@@ -191,6 +200,7 @@ namespace modules {
 
     void set_visible(bool value);
 
+    void action_module_hovered(bool hover);
     void action_module_toggle();
     void action_module_show();
     void action_module_hide();
@@ -215,6 +225,7 @@ namespace modules {
     vector<thread> m_threads;
     thread m_mainthread;
 
+    atomic<bool> m_hover{false};
     bool m_handle_events{true};
 
    private:

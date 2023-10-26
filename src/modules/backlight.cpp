@@ -66,11 +66,16 @@ namespace modules {
     m_scroll_log = m_conf.get(name(), "scroll-log", m_scroll_log);
 
     // Add formats and elements
-    m_formatter->add(DEFAULT_FORMAT, TAG_LABEL, {TAG_LABEL, TAG_BAR, TAG_RAMP});
+    m_formatter->add_default_formats(TAG_LABEL, {TAG_LABEL, TAG_LABEL_HOVER, TAG_BAR, TAG_RAMP});
 
     if (m_formatter->has(TAG_LABEL)) {
       m_label = load_optional_label(m_conf, name(), TAG_LABEL, "%percentage%%");
     }
+
+    if (m_formatter->has(TAG_LABEL_HOVER)) {
+      m_label_hover = load_optional_label(m_conf, name(), TAG_LABEL_HOVER, "%percentage%%");
+    }
+
     if (m_formatter->has(TAG_BAR)) {
       m_progressbar = load_progressbar(m_bar, m_conf, name(), TAG_BAR);
     }
@@ -135,6 +140,11 @@ namespace modules {
         m_label->replace_token("%percentage%", to_string(m_percentage));
       }
 
+      if (m_label_hover) {
+        m_label_hover->reset_tokens();
+        m_label_hover->replace_token("%percentage%", to_string(m_percentage));
+      }
+
       return true;
     }
 
@@ -168,7 +178,9 @@ namespace modules {
     } else if (tag == TAG_RAMP) {
       builder->node(m_ramp->get_by_percentage(m_percentage));
     } else if (tag == TAG_LABEL) {
-      builder->node(m_label);
+        builder->node(m_label);
+    } else if (tag == TAG_LABEL_HOVER) {
+        builder->node(m_label_hover);
     } else {
       return false;
     }

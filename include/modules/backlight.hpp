@@ -46,6 +46,7 @@ namespace modules {
     static constexpr const char* EVENT_TOGGLE = "toggle";
 
    protected:
+    void action_hover(bool state);
     void action_toggle();
     void action_inc();
     void action_dec();
@@ -56,11 +57,13 @@ namespace modules {
 
    private:
     static constexpr auto TAG_LABEL = "<label>";
+    static constexpr auto TAG_LABEL_HOVER = "<label-hover>";
     static constexpr auto TAG_BAR = "<bar>";
     static constexpr auto TAG_RAMP = "<ramp>";
 
     ramp_t m_ramp;
     label_t m_label;
+    label_t m_label_hover;
     progressbar_t m_progressbar;
     string m_path_backlight;
     float m_max_brightness{};

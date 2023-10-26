@@ -30,6 +30,11 @@ namespace modules {
     m_router->register_action(EVENT_MODULE_TOGGLE, [this]() { action_module_toggle(); });
     m_router->register_action(EVENT_MODULE_SHOW, [this]() { action_module_show(); });
     m_router->register_action(EVENT_MODULE_HIDE, [this]() { action_module_hide(); });
+
+    if (bar.enable_hover_actions) {
+      m_router->register_action(EVENT_MODULE_HOVER_ON, [this]() { action_module_hovered(true); });
+      m_router->register_action(EVENT_MODULE_HOVER_OFF, [this]() { action_module_hovered(false); });
+    }
   }
 
   template <typename Impl>
@@ -189,11 +194,22 @@ namespace modules {
 
   template <typename Impl>
   string module<Impl>::get_format() const {
+    if( m_hover ) {
+      if( m_formatter->has_format(DEFAULT_FORMAT_HOVER) ) {
+        return DEFAULT_FORMAT_HOVER;
+      }
+
+      m_log.warn("%s: Module does not implement %s", name(), DEFAULT_FORMAT_HOVER);
+    }
+
     return DEFAULT_FORMAT;
   }
 
   template <typename Impl>
   string module<Impl>::get_output() {
+    m_builder->action(mousebtn::HOVER_START, *this, EVENT_MODULE_HOVER_ON, "");
+    m_builder->action(mousebtn::HOVER_END, *this, EVENT_MODULE_HOVER_OFF, "");
+
     std::lock_guard<std::mutex> guard(m_buildlock);
     auto format_name = CONST_MOD(Impl).get_format();
     auto format = m_formatter->get(format_name);
@@ -289,6 +305,13 @@ namespace modules {
   void module<Impl>::set_visible(bool value) {
     m_log.notice("%s: Visibility changed (state=%s)", m_name, value ? "shown" : "hidden");
     m_visible = value;
+    broadcast();
+  }
+
+  template <typename Impl>
+  void module<Impl>::action_module_hovered(bool value) {
+    m_log.info("%s: Hover status changed (%sactive)", m_name, value ? "" : "in");
+    m_hover = value;
     broadcast();
   }
 
