@@ -140,11 +140,13 @@ namespace modules {
   }
 
   void module_formatter::add_default_formats(string fallback, vector<string>&& tags, vector<string>&& whitelist) {
-
     add(DEFAULT_FORMAT, fallback, forward<vector<string>>(tags), forward<vector<string>>(whitelist));
 
+    // <label> -> <label-hover> etc...
+    std::string fmt_hover = string_util::replace(get(DEFAULT_FORMAT)->value, ">", "-hover>");
+
     // Default FORMAT-HOVER shall be the same as FORMAT for backwards compatibility
-    add(DEFAULT_FORMAT_HOVER, get(DEFAULT_FORMAT)->value, forward<vector<string>>(tags), forward<vector<string>>(whitelist));
+    add(DEFAULT_FORMAT_HOVER, fmt_hover, forward<vector<string>>(tags), forward<vector<string>>(whitelist));
   }
 
   void module_formatter::add(string name, string fallback, vector<string>&& tags, vector<string>&& whitelist) {

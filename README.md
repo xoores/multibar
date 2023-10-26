@@ -15,6 +15,10 @@ My intention is to keep as much compatibility with Polybar and point out things 
 ## Table of Contents
 
 * [Introduction](#introduction)
+* [Improvements over Polybar](#improvements-over-polybar)
+  * [Hover actions](#hover-actions)
+  * [Enhanced `internal/backlight`](#enhanced-internalbacklight)
+  * [Enhanced `internal/network`](#enhanced-internalnetwork)
 * [Getting started](#getting-started)
   * [Installation](#installation)
   * [First Steps](#first-steps)
@@ -46,6 +50,66 @@ Some of the services included so far:
 - And more...
 
 [See the Polybar wiki for more details](https://github.com/polybar/polybar/wiki).
+
+## Improvements over Polybar
+
+### Hover actions
+- Modules are now easily upgradeable (with backwards compatibility) to use new hover actions (A9 A10).
+- There is `format` and `format-hover` that is evaluated when mouse is hovering over a module
+
+#### Example usage with `internal/date`:
+```ini
+[module/date]
+type = internal/date
+interval = 2
+date = [%d.%m]
+time = %H:%M
+date-alt = [%d.%m.%Y]
+time-alt = %H:%M:%S
+label = %{A9:#date.toggle:}%{A10:#date.toggle:}%time% %date%%{A9 A10}
+```
+results in following change when hovering over date module:
+
+![hover off](doc/_static/date-hover_off.png)
+![hover on](doc/_static/date-hover_on.png)
+
+#### Example with `internal-backlight`:
+```ini
+[module/brightness]
+type = internal/backlight
+card = intel_backlight
+#card = nvidia_0
+
+enable-scroll = true
+scroll-log = true
+reverse-scroll = true
+scroll-interval = 10
+
+format = "%{T5}%{T-}<label>%{F-}  "
+label =
+label-hover = " %percentage%%"
+```
+results in following change when hovering over date module:
+
+![hover off](doc/_static/brightness-hover_off.png) ![hover on](doc/_static/brightness-hover_on.png)
+
+### Enhanced `internal/backlight`
+This module got several new options:
+- `reverse-scroll` (default off), this one is pretty self-explanatory
+- `logarithmic-scroll` (default off). This changes `scroll-interval` dynamically - basically human eye is a lot more sensitive to
+changes in backlight in the lower range. Meaning that perceived change from 85%->100% is basically the same as for example 1%->3%.
+This option sets `scroll-interval` to 1% when brightness <5% and to 3% when brightness is <= 15%, allowing much smoother dimming
+while still enabling reasonable fast scrolling for higher brightness.
+
+### Enhanced `internal/network`
+Network module got an `metric-units` option as described in [Polybar PR #3001 by @Cationiz3r](https://github.com/polybar/polybar/pull/3001)
+
+### TODO
+- [ ] Global hover actions in modules - at least the ones I use ;-)
+- [ ] Support for adding icons to workplace names in i3 based on what app is on workplace
+- [ ] Network aliases for `internal/network` modules, so I can have home SSID displayed as  etc
+- [ ] Mark default-gw interface in `internal/network` so I can tell what is being used as uplink
+
 
 ## Getting started
 

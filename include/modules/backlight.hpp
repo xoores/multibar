@@ -46,7 +46,6 @@ namespace modules {
     static constexpr const char* EVENT_TOGGLE = "toggle";
 
    protected:
-    void action_hover(bool state);
     void action_toggle();
     void action_inc();
     void action_dec();
