@@ -69,6 +69,7 @@ namespace net {
     string ip;
     string ip6;
     string mac;
+    unsigned int netmask;
     link_activity previous{};
     link_activity current{};
   };
@@ -85,7 +86,9 @@ namespace net {
     virtual bool connected() const = 0;
     virtual bool ping() const;
 
+    bool default_gw() const;
     string ip() const;
+    string netmask() const;
     string ip6() const;
     string mac() const;
     string downspeed(int minwidth = 3, const string& unit = "B/s", bool metric_units = false) const;
@@ -103,6 +106,7 @@ namespace net {
     unique_ptr<file_descriptor> m_socketfd;
     link_status m_status{};
     string m_interface;
+    bool m_default_gw{false};
     bool m_tuntap{false};
     bool m_bridge{false};
     bool m_unknown_up{false};

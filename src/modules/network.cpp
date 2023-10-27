@@ -59,12 +59,13 @@ namespace modules {
     m_unknown_up = m_conf.get<bool>(name(), "unknown-as-up", false);
     m_metric_units = m_conf.get<bool>(name(), "metric-units", m_metric_units);
     m_udspeed_unit = m_conf.get<string>(name(), "speed-unit", m_udspeed_unit);
+    m_gw_marker = m_conf.get<string>(name(), "default-gw-mark", "+");
 
     m_conf.warn_deprecated(name(), "udspeed-minwidth", "%downspeed:min:max% and %upspeed:min:max%");
 
     // Add formats
-    m_formatter->add(FORMAT_CONNECTED, TAG_LABEL_CONNECTED, {TAG_RAMP_SIGNAL, TAG_RAMP_QUALITY, TAG_LABEL_CONNECTED});
-    m_formatter->add(FORMAT_DISCONNECTED, TAG_LABEL_DISCONNECTED, {TAG_LABEL_DISCONNECTED});
+    m_formatter->add(FORMAT_CONNECTED, TAG_LABEL_CONNECTED, {TAG_DEFAULT_GW_MARK, TAG_RAMP_SIGNAL, TAG_RAMP_QUALITY, TAG_LABEL_CONNECTED});
+    m_formatter->add(FORMAT_DISCONNECTED, TAG_LABEL_DISCONNECTED, {TAG_DEFAULT_GW_MARK, TAG_LABEL_DISCONNECTED});
 
     // Create elements for format-connected
     if (m_formatter->has(TAG_RAMP_SIGNAL, FORMAT_CONNECTED)) {
@@ -111,6 +112,23 @@ namespace modules {
     if (m_animation_packetloss) {
       m_threads.emplace_back(thread(&network_module::subthread_routine, this));
     }
+
+
+    // clang-format off
+    m_actions.emplace(make_pair<mousebtn, string>(mousebtn::LEFT, m_conf.get(name(), "click-left", ""s)));
+    m_actions.emplace(make_pair<mousebtn, string>(mousebtn::MIDDLE, m_conf.get(name(), "click-middle", ""s)));
+    m_actions.emplace(make_pair<mousebtn, string>(mousebtn::RIGHT, m_conf.get(name(), "click-right", ""s)));
+    m_actions.emplace(make_pair<mousebtn, string>(mousebtn::SCROLL_UP, m_conf.get(name(), "scroll-up", ""s)));
+    m_actions.emplace(make_pair<mousebtn, string>(mousebtn::SCROLL_DOWN, m_conf.get(name(), "scroll-down", ""s)));
+    m_actions.emplace(make_pair<mousebtn, string>(mousebtn::DOUBLE_LEFT, m_conf.get(name(), "double-click-left", ""s)));
+    m_actions.emplace(make_pair<mousebtn, string>(mousebtn::DOUBLE_MIDDLE, m_conf.get(name(), "double-click-middle", ""s)));
+    m_actions.emplace(make_pair<mousebtn, string>(mousebtn::DOUBLE_RIGHT, m_conf.get(name(), "double-click-right", ""s)));
+    // clang-format on
+
+    for (auto& action : m_actions) {
+      action.second = string_util::replace_all(action.second, "%interface%", m_interface);
+    }
+
   }
 
   void network_module::teardown() {
@@ -121,6 +139,12 @@ namespace modules {
   bool network_module::update() {
     net::network* network =
         m_wireless ? static_cast<net::network*>(m_wireless.get()) : static_cast<net::network*>(m_wired.get());
+
+    for (auto&& action : m_actions) {
+      if (!action.second.empty()) {
+        m_builder->action(action.first, action.second);
+      }
+    }
 
     if (!network->query(m_accumulate)) {
       m_log.warn("%s: Failed to query interface '%s'", name(), m_interface);
@@ -150,12 +174,14 @@ namespace modules {
     auto upspeed = network->upspeed(m_udspeed_minwidth, m_udspeed_unit, m_metric_units);
     auto downspeed = network->downspeed(m_udspeed_minwidth, m_udspeed_unit, m_metric_units);
     auto netspeed = network->netspeed(m_udspeed_minwidth, m_udspeed_unit, m_metric_units);
+    m_default_gw = network->default_gw();
 
     // Update label contents
     const auto replace_tokens = [&](label_t& label) {
       label->reset_tokens();
       label->replace_token("%ifname%", m_interface);
       label->replace_token("%local_ip%", network->ip());
+      label->replace_token("%local_netmask%", network->netmask());
       label->replace_token("%mac%", network->mac());
       label->replace_token("%local_ip6%", network->ip6());
       label->replace_token("%upspeed%", upspeed);
@@ -207,9 +233,16 @@ namespace modules {
       builder->node(m_ramp_signal->get_by_percentage(m_signal));
     } else if (tag == TAG_RAMP_QUALITY) {
       builder->node(m_ramp_quality->get_by_percentage(m_quality));
+    }  else if (tag == TAG_DEFAULT_GW_MARK) {
+      if( m_default_gw ) {
+        builder->node(m_gw_marker);
+      }
+
     } else {
       return false;
     }
+
+
     return true;
   }
 

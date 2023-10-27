@@ -34,10 +34,12 @@ namespace modules {
     static constexpr auto TAG_LABEL_DISCONNECTED = "<label-disconnected>";
     static constexpr auto TAG_LABEL_PACKETLOSS = "<label-packetloss>";
     static constexpr auto TAG_ANIMATION_PACKETLOSS = "<animation-packetloss>";
+    static constexpr auto TAG_DEFAULT_GW_MARK = "<default-gw-mark>";
 
     net::wired_t m_wired;
     net::wireless_t m_wireless;
 
+    map<mousebtn, string> m_actions;
     ramp_t m_ramp_signal;
     ramp_t m_ramp_quality;
     animation_t m_animation_packetloss;
@@ -51,8 +53,10 @@ namespace modules {
     int m_counter{-1};  // -1 to ignore the first run
 
     string m_interface;
+    string m_gw_marker;
     int m_ping_nth_update{0};
     int m_udspeed_minwidth{0};
+    bool m_default_gw{false};
     bool m_accumulate{false};
     bool m_unknown_up{false};
     bool m_metric_units{true};

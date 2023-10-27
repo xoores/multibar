@@ -194,7 +194,9 @@ namespace modules {
 
     if( m_percentage < 5) {
       return 1;
-    } else if( m_percentage <= 15 ) {
+    }
+
+    if( m_percentage <= 20 ) {
       return 3;
     }
 

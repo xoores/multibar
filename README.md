@@ -19,6 +19,7 @@ My intention is to keep as much compatibility with Polybar and point out things 
   * [Hover actions](#hover-actions)
   * [Enhanced `internal/backlight`](#enhanced-internalbacklight)
   * [Enhanced `internal/network`](#enhanced-internalnetwork)
+  * [Enhanced `internal/battery`](#enhanced-internalbattery)
 * [Getting started](#getting-started)
   * [Installation](#installation)
   * [First Steps](#first-steps)
@@ -101,6 +102,13 @@ while still enabling reasonable fast scrolling for higher brightness.
 
 ### Enhanced `internal/network`
 Network module got an `metric-units` option as described in [Polybar PR #3001 by @Cationiz3r](https://github.com/polybar/polybar/pull/3001)
+There is also new token `%local_netmask%` that can be used to determine netmask - nice feature for someone who works with a lot of
+networking.
+
+I also added TAG `<default-gw-mark>` that gets replaced with string specified by `default-gw-mark` setting (defaults to `+`) when modules
+interface is a default gw.
+
+This module now also has all the `click-` actions, so you don't have to specify `%{A...}` for each and every label anymore.
 
 ### Enhanced `internal/battery`
 This module got extra `ramp-charging` option as I like to have a special icon when charging (has a bolt inside).

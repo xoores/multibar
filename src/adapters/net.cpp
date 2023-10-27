@@ -14,6 +14,7 @@
 
 #include <cassert>
 #include <iomanip>
+#include <bitset>
 
 #include "common.hpp"
 #include "settings.hpp"
@@ -156,6 +157,7 @@ namespace net {
     m_status.current.time = std::chrono::steady_clock::now();
     m_status.ip = NO_IP;
     m_status.ip6 = NO_IP;
+    m_status.netmask = 0;
 
     struct ifaddrs* ifaddr;
     if (getifaddrs(&ifaddr) == -1 || ifaddr == nullptr) {
@@ -166,6 +168,38 @@ namespace net {
     if (m_status.mac == "") {
       m_status.mac = NO_MAC;
     }
+
+    // try to extract first default gw from /proc/net/route
+    FILE* fp = fopen("/proc/net/route", "r");
+    if( fp ) {
+      char line[256] = { 0 };
+      while( fgets(line, sizeof(line), fp) != NULL ) {
+        char iface[64] = { 0 };
+        char *i = iface;
+        char dest[64] = { 0 };
+        char *d = dest;
+        char *l = line;
+
+        // Pointer pr0n
+        while( *l && *l <= ' ' ) l++; // Drop leading whitespaces (if any)
+        while( *l && *l > ' ' ) *i++ = *l++; // copy everything from first column
+        while( *l && *l <= ' ' ) l++; // Drop any whitespaces
+        while( *l && *l > ' ' ) *d++ = *l++; // copy second column
+
+        if( strncmp(dest, "00000000", 8) ) {
+          continue;
+        }
+
+        if( strncmp(iface, m_interface.c_str(), strlen(m_interface.c_str())) ) {
+          continue;
+        }
+
+        m_default_gw = true;
+        break;
+      }
+      fclose(fp);
+    }
+
 
     for (auto ifa = ifaddr; ifa != nullptr; ifa = ifa->ifa_next) {
       if (ifa->ifa_addr == nullptr) {
@@ -181,11 +215,15 @@ namespace net {
       struct sockaddr_in6* sa6;
 
       switch (ifa->ifa_addr->sa_family) {
-        case AF_INET:
+        case AF_INET: {
           char ip_buffer[NI_MAXHOST];
           getnameinfo(ifa->ifa_addr, sizeof(sockaddr_in), ip_buffer, NI_MAXHOST, nullptr, 0, NI_NUMERICHOST);
           m_status.ip = string{ip_buffer};
+
+          std::bitset<32> bits = ((struct sockaddr_in *) ifa->ifa_netmask)->sin_addr.s_addr;
+          m_status.netmask = bits.count();
           break;
+        }
 
         case AF_INET6:
           char ip6_buffer[INET6_ADDRSTRLEN];
@@ -240,11 +278,26 @@ namespace net {
   }
 
   /**
+   * Is interface a default gw?
+   */
+  bool network::default_gw() const {
+    return m_default_gw;
+  }
+
+  /**
    * Get interface ipv4 address
    */
   string network::ip() const {
     return m_status.ip;
   }
+
+  /**
+   * Get interface address mask
+   */
+  string network::netmask() const {
+    return std::to_string(m_status.netmask);
+  }
+
   /**
    * Get interface mac address
    */
