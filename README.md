@@ -123,9 +123,10 @@ during the off-hours.
 - [ ] Global hover actions in modules - at least the ones I use ;-)
 - [ ] Support for adding icons to workplace names in i3 based on what app is on workplace
 - [ ] Network aliases for `internal/network` modules, so I can have home SSID displayed as  etc
-- [ ] Mark default-gw interface in `internal/network` so I can tell what is being used as uplink
+- [ ] Add ICMP module, so we can monitor the internet connection (not tied to any network module)
 - [ ] Sending DBUS notification on volume/brightness change
 - [ ] `internal/pulseaudio` should support both sources and sinks
+- [X] Mark default-gw interface in `internal/network` so I can tell what is being used as uplink
 
 
 ## Getting started
